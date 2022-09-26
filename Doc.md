@@ -12,7 +12,7 @@
   * return id 
     * -2 bad nickname
     * -1 bad password
-    * 10 000 and more --> complite
+    * 10 000 and more --> complete
 ### /register
   * headers
     * nick 
