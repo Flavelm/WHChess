@@ -8,7 +8,7 @@
         > Login
     * pass 
         > Password
-    * Client(Platform + version game)
+    * platform(Platform + version game)
   * return id 
     * -2 bad nickname
     * -1 bad password
