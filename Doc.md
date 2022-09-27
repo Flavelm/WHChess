@@ -1,6 +1,6 @@
 ## Doc WHChess server
 
-> Всё то что было выполнено удачно return "0"
+> Если есть '0', в return есть description:Error
 
 ### /login
   * headers
@@ -13,6 +13,8 @@
     * -2 bad nickname
     * -1 bad password
     * 10 000 and more --> complete
+    > exemple
+    > {"id":"int"}
 ### /register
   * headers
     * nick 
@@ -20,9 +22,9 @@
     * pass 
         > Password
   * return
-    * "1"
+    * "{'PlayerRegistered': '0'}"
       > ник занят
-    * id игрока
+    * "{'PlayerRegistered': '1'}"
       > ник не занят
 ### /create
   * headers
@@ -31,8 +33,8 @@
     * RoomName
       > Имя комнаты
   * return
-    * "0"
-    * "Error"
+    * "{'Create': '1'}"
+    * "{'Create': '0', 'description': 'Player not detected'}"
 ### /join
   * headers
     * id
@@ -40,15 +42,14 @@
     * roomname
       >Имя комнаты
   * return
-    > "0" or error
+    > "{'Join': '0'/'1'}"
 ### /leave
-  > Смотри join
+  > Смотри join только не Join а Leave
 ### /rooms
   * return
     > Список комнат в формате
-      > [{"Name":str, "Players":[str, str], "MaxPlayers":str(int), "GameStarted":False,"WaitPlayer":"0", "canvas":...},
-      > {"Name":str, "Players":[str, str], "MaxPlayers":str(int), "GameStarted":False,"WaitPlayer":"0", "canvas":...},
-      > {"Name":str, "Players":[str, str], "MaxPlayers":str(int), "GameStarted":False,"WaitPlayer":"0", "canvas":...}]
+      > [{'Name': 'Fun', 'GameStarted': False, 'Players': ['Nya'], 'MaxPlayers': '2', 'WaitPlayer': '0', 'Canvas': <Canvas.Canvas object at 0x000001E8B97E7460>, 'mode': 'clasic'},
+      > {...}]
 ### /move
   * headers
     * startpos
@@ -59,11 +60,19 @@
       > Имя комнаты
     * id
       > Имя игрока
+  * return
+    > "{'Move': '1'}"
+    > "{'Move': '0'}"
 ### /show
  * headers
-  * roomname
-    >Имя комнаты
+   * roomname
+     >Имя комнаты
  * return
   > Игровое поле
   > exemple:
   > "[['Black castle', 'Black knight', 'Black bishop', 'Black queen', 'Black king', 'Black bishop', 'Black knight', 'Black castle'], ['Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn'], ['null', 'null', 'null', 'null', 'null', 'null', 'null', 'null'], ['null', 'null', 'null', 'null', 'null', 'null', 'null', 'null'], ['null', 'null', 'null', 'null', 'null', 'null', 'null', 'null'], ['null', 'null', 'null', 'null', 'null', 'null', 'null', 'null'], ['White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn'], ['White castle', 'White knight', 'White bishop', 'White queen', 'White king', 'White bishop', 'White knight', 'White castle']]"
+### /show4mouse
+ * headers
+   * roomname
+ * return
+   > "{'Canvas':['Black castle', 'Black knight', 'Black bishop', 'Black queen', 'Black king', 'Black bishop', 'Black knight', 'Black castle', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White castle', 'White knight', 'White bishop', 'White queen', 'White king', 'White bishop', 'White knight', 'White castle']}"
