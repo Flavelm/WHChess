@@ -3,9 +3,9 @@ from Player import PlayersSave
 from threading import Thread
 Players = PlayersSave()
 class RoomsClass:
-	#{"Name":str, "Players":[str, str], "MaxPlayers":str(int), "GameStarted":False,"WaitPlayer":"0", "Canvas":...}0
+	#{"Name":str, "Players":[str, str], "MaxPlayers":str(int), "IsGameStarted":False,"WaitPlayer":"0", "Canvas":...}0
 	def __init__(self):
-		self.RoomList = []
+		self.RoomList = {"Rooms":[]}
 	def CreateRoom(self, PlayerId:str, RoomName:str, mode:str) -> str:
 		global Players
 		Nickname = ""
@@ -14,15 +14,15 @@ class RoomsClass:
 				Nickname = player["nick"]
 		if Nickname == "":
 			return str({"Create":"0", "description":"Player not detected"}) #"Player not detected"
-		self.RoomList.append({"Name":RoomName, "GameStarted":False, "Players":[], "MaxPlayers":"2", "WaitPlayer":"0", "Canvas":Canvas(), "mode":"clasic"})
-		self.RoomList[-1]["Canvas"].CreateChessBoard()
+		self.RoomList["Rooms"].append({"Name":RoomName, "IsGameStarted":0, "Players":[], "MaxPlayers":2, "WaitPlayer":0, "Canvas":Canvas(), "mode":"classic"})
+		self.RoomList["Rooms"][-1]["Canvas"].CreateChessBoard()
 		Thread(target=self.JoinToRoom, args = (PlayerId, RoomName)).run()
 		return {"Create":"1"}
 	def JoinToRoom(self, PlayerId:str, RoomName:str) -> str:
 		global Players
 		Room = {}
 		Nickname = ""
-		for MyRoom in self.RoomList:
+		for MyRoom in self.RoomList["Rooms"]:
 			NameRoom = MyRoom["Name"]
 			if NameRoom == RoomName:
 				Room = MyRoom
@@ -42,7 +42,7 @@ class RoomsClass:
 		global Players
 		Nickname = ""
 		Room = {}
-		for MyRoom in self.RoomList:
+		for MyRoom in self.RoomList["Rooms"]:
 			NameRoom = MyRoom["Name"]
 			if NameRoom == RoomName:
 				Room = MyRoom
@@ -60,7 +60,7 @@ class RoomsClass:
 		global Players
 		Room = {}
 		Nickname = ""
-		for MyRoom in self.RoomList:
+		for MyRoom in self.RoomList["Rooms"]:
 			NameRoom = MyRoom["Name"]
 			if NameRoom == RoomName:
 				Room = MyRoom
@@ -80,7 +80,7 @@ class RoomsClass:
 	def show4mouse(self, RoomName):
 		global Players
 		Room = {}
-		for MyRoom in self.RoomList:
+		for MyRoom in self.RoomList["Rooms"]:
 			NameRoom = MyRoom["Name"]
 			if NameRoom == RoomName:
 				Room = MyRoom
@@ -88,10 +88,22 @@ class RoomsClass:
 		if Room == {}:
 			return str({"Print":"0", "description":"Room not detected"})
 		return Room["Canvas"].show4mouse(Room["Name"])
+	def RoomsReturn(self):
+		Info = str(self.RoomList["Rooms"])
+		NewRoomList = []
+		for Room in Info:
+			NewRoom = []
+			for key in Room:
+				if key == "Canvas":
+					NewRoom["Canvas"] = self.show4mouse(NewRoom["Name"])
+				else:
+					NewRoom[key] = Room[key]
+			NewRoomList.append(NewRoom)
+		return NewRoomList
 	def PrintCanvas(self, RoomName:str) -> str:
 		global Players
 		Room = {}
-		for MyRoom in self.RoomList:
+		for MyRoom in self.RoomList["Rooms"]:
 			NameRoom = MyRoom["Name"]
 			if NameRoom == RoomName:
 				Room = MyRoom

@@ -54,7 +54,7 @@ def Register():
 
 @app.route("/rooms", methods = ["GET", "POST"])
 def GetRooms():
-	return str(Rooms.RoomList)
+	return str(Rooms.RoomReturn())
 
 @app.route("/create", methods = ["GET", "POST"])
 def CreateRoom():

@@ -62,10 +62,12 @@ class Canvas:
 		Pole = pole
 		print("Партия в комнате " + RoomName)
 		print(" " + Pole)
-		return str(self.ChessBoard)
+		return str("{'Canvas':[" + Pole + "]}")
 	def show4mouse(self, RoomName):
 		self.PrintChessBoard(RoomName)
 		Pole = str(self.ChessBoard).replace("[","").replace("]","")
 		return str("{'Canvas':[" + Pole + "]}")
+	def Нихуя(self):
+		return "Рили нихуя"
 	def __str__(self):
 		return str(self.ChessBoard)
