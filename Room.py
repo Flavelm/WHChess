@@ -14,7 +14,7 @@ class RoomsClass:
 				Nickname = player["nick"]
 		if Nickname == "":
 			return str({"Create":"0", "description":"Player not detected"}) #"Player not detected"
-		self.RoomList["Rooms"].append({"Name":RoomName, "IsGameStarted":0, "Players":[], "MaxPlayers":2, "WaitPlayer":0, "Canvas":Canvas(), "mode":"classic"})
+		self.RoomList["Rooms"].append({"Name":RoomName, "IsGameStarted":0, "Players":[], "MaxPlayers":2, "WaitPlayer":0, "mode":"classic", "Canvas":Canvas()})
 		self.RoomList["Rooms"][-1]["Canvas"].CreateChessBoard()
 		Thread(target=self.JoinToRoom, args = (PlayerId, RoomName)).run()
 		return {"Create":"1"}
@@ -89,17 +89,16 @@ class RoomsClass:
 			return str({"Print":"0", "description":"Room not detected"})
 		return Room["Canvas"].show4mouse(Room["Name"])
 	def RoomsReturn(self):
-		Info = str(self.RoomList["Rooms"])
+		Info = self.RoomList["Rooms"]
 		NewRoomList = []
 		for Room in Info:
-			NewRoom = []
+			NewRoom = {}
 			for key in Room:
-				if key == "Canvas":
-					NewRoom["Canvas"] = self.show4mouse(NewRoom["Name"])
-				else:
+				if key != "Canvas":
+					print(key, "\n", Room, "\n", NewRoom, "\n", type(key), type(Room))
 					NewRoom[key] = Room[key]
 			NewRoomList.append(NewRoom)
-		return NewRoomList
+		return str({"Rooms":NewRoomList})
 	def PrintCanvas(self, RoomName:str) -> str:
 		global Players
 		Room = {}

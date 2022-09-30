@@ -7,6 +7,7 @@ try:
 	from Room import RoomsClass
 	from Player import PlayersSave
 	from funcs import IsNone
+	from threading import Thread
 except:
 	print("Import Error")
 	input(traceback.format_exc())
@@ -54,7 +55,7 @@ def Register():
 
 @app.route("/rooms", methods = ["GET", "POST"])
 def GetRooms():
-	return str(Rooms.RoomReturn())
+	return str(Rooms.RoomsReturn())
 
 @app.route("/create", methods = ["GET", "POST"])
 def CreateRoom():
