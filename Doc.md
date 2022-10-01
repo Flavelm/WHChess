@@ -75,4 +75,18 @@
  * headers
    * roomname
  * return
-   > "{'Canvas':['Black castle', 'Black knight', 'Black bishop', 'Black queen', 'Black king', 'Black bishop', 'Black knight', 'Black castle', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White castle', 'White knight', 'White bishop', 'White queen', 'White king', 'White bishop', 'White knight', 'White castle']}"
+   > "{'Canvas':['Black castle', 'Black knight', 'Black bishop', 'Black queen', 'Black king', 'Black bishop', 'Black knight', 'Black castle', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White castle', 'White knight', 'White bishop', 'White queen', 'White king', 'White bishop', 'White knight', 'White castle'], "Winner":-1}"
+     > 1 белые; 0 чёрные; -1 игра ещё идёт
+### /room
+ * headers
+   * roomname
+ * return
+   > {"Name":RoomName, "IsGameStarted":0, "Players":[], "MaxPlayers":2, "WaitPlayer":0, "mode":"classic", "Reverse":int(Reversed), "Canvas":Canvas()}
+### /room/color
+ * headers
+   * id
+     > Id игрока
+   * roomname
+ * return
+  * {"Color":"White"} or {"Color":"Black"} or {"Color":0}(Error)
+    > Более просто есть в room["Players"] но лучше этим пользоватся
