@@ -32,6 +32,10 @@
       > id игрока
     * RoomName
       > Имя комнаты
+    * mode
+      > classic or free
+    * reverse
+      > 0 or 1
   * return
     * "{'Create': '1'}"
     * "{'Create': '0', 'description': 'Player not detected'}"
