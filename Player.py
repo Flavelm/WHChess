@@ -1,8 +1,10 @@
-import json, os
+import json
+from random import randint
 class PlayersSave:
 	Players = []
-	#{"nick":"Nya", "pass":"Me0w", "id":"0", "money":"0"}
+	#{"nick": str, "pass": str, "id": int, "money": 0, "platforms": [], "items":["ClassicBoard", "ClassicPiece"], "UseDefault":{"ColorChessBoard":"ClassicBoard", "ColorChessPiece":"ClassicPiece"}}
 	def __init__(self):
+		self.Players = []
 		self.load()
 	def load(self):
 		try:
@@ -21,10 +23,10 @@ class PlayersSave:
 	def __str__(self):
 		return self.Players
 	def login(self, nickname:str, password:str, platform:str):
+		self.load()
 		id = -2
 		print(self.Players)
 		for player in self.Players:
-			print(player)
 			if str(player["nick"]) == nickname:
 				id = -1
 				if player["pass"] == password:
@@ -39,16 +41,27 @@ class PlayersSave:
 					return str({"id": id})
 		return str({"id": id})
 	def register(self, nickname:str, password:str):
+		self.load()
 		for Player in self.Players:
 			if Player["nick"] == nickname:
-				return str({"PlayerRegistered":"0"}) #"Игрок с таким ником уже зарегистрирован"
+				return str({"PlayerRegistered":0, "description":"Игрок с таким ником уже зарегистрирован"})
 		id = 0
 		while id == 0:
 			id = randint(10000, 999999999999999999)
 			for player in self.Players:
-				player["id"] == id
-				id = 0
-				print("Случилось невероятное")
-				break
+				if player["id"] == id:
+					id = 0
+					print("Случилось невероятное")
+					break
+		self.Players.append({"nick": nickname, "pass": password, "id": str(id), "money":0, "platforms":[], "items":["ClassicBoard", "ClassicPiece"], "UseDefault":{"ColorChessBoard":"ClassicBoard", "ColorChessPiece":"ClassicPiece", "notifications":[]}})
 		self.write()
-		return str({"PlayerRegistered":"1"})
+		return str({"PlayerRegistered":1})
+	def AddNotifications(self, nickname:str, data:dict):
+		"""
+		data = {"type":"win" or "lose" or "buy" or "server" or "promo", "description":str}
+		"""
+		for player in self.Players:
+			if str(player["nick"]) == nickname:
+				player["notifications"].append(data)
+				return 1
+			return 0
