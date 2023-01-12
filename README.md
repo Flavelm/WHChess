@@ -100,3 +100,10 @@
      > id игрока
  * return
   >  {'notifications': [{'type': 'server', 'description': 'Xyu'}]}
+### types notification
+  * win
+  * lose
+  * draw
+  * buy
+  * server
+  * promo
