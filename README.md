@@ -100,6 +100,12 @@
      > id игрока
  * return
   >  {'notifications': [{'type': 'server', 'description': 'Xyu'}]}
+### /notifications/del_all
+ * headers
+   * id
+     > id игрока
+ * return
+  > {"delete":0/1}
 ### types notification
   * win
   * lose
