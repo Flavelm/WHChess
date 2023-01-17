@@ -42,18 +42,24 @@
     * reverse
       > 0 or 1
   * return
-    * "{'Create': 1}"
-    * "{'Create': 0, 'description': 'Player not detected'}"
+    > "{'Create': 1}"
+    > "{'Create': 0, 'description': 'Player not detected'}"
 ### /join
   * headers
     * id
-      >id player
+      > id player
     * roomname
-      >Имя комнаты
+      > Имя комнаты
   * return
     > "{'Join': 0/1}"
 ### /leave
-  > Смотри join только не Join а Leave
+  * headers
+    * id
+      > id player
+    * roomname
+      > Имя комнаты
+  * return
+    > "{'Leave': 0/1}"
 ### /rooms
   * return
     > Список комнат в формате
@@ -78,14 +84,16 @@
    * color
      > Внимание! Можно не указывать если fog war выключен white или black, капс букв не учитывается
  * return
-   > "{'Canvas':['Black castle', 'Black knight', 'Black bishop', 'Black queen', 'Black king', 'Black bishop', 'Black knight', 'Black castle', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White castle', 'White knight', 'White bishop', 'White queen', 'White king', 'White bishop', 'White knight', 'White castle'], "Winner":-1}"
+   > {'Canvas':['Black castle', 'Black knight', 'Black bishop', 'Black queen', 'Black king', 'Black bishop', 'Black knight', 'Black castle', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White castle', 'White knight', 'White bishop', 'White queen', 'White king', 'White bishop', 'White knight', 'White castle'], "Winner":-1}
    * Winner
     > 1 белые; 0 чёрные; -1 игра ещё идёт
+   > {"Canvas":0, "description":"Room not detected"}
 ### /room
  * headers
    * roomname
  * return
    >  {'Name': 'Fun', 'IsGameStarted': 0, 'Players': ['Nya'], 'MaxPlayers': 2, 'WaitPlayer': 0, 'mode': {'free': 'False', 'random': 'True', 'fog': 'True'}, 'Reverse': 0, 'Winner': -1}
+   >  {"Room":0, "description":"Room not detected"}
 ### /room/color
  * headers
    * id
@@ -106,6 +114,13 @@
      > id игрока
  * return
   > {"delete":0/1}
+### /profile | /status
+ * headers
+   * id
+     > id игрока
+ * returns
+   * {"Profile":0, "description":"Player not detected"}
+   * {'Profile': {'win': 0, 'lose': -1, 'nick': 'lol', 'level': 0.75}}
 ### types notification
   * win
   * lose
