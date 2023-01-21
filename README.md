@@ -41,6 +41,8 @@
         > True or False, туман войны
     * reverse
       > 0 or 1
+    * maxplayers
+      > int
   * return
     > "{'Create': 1}"
     > "{'Create': 0, 'description': 'Player not detected'}"
