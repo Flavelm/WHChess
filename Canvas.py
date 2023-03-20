@@ -7,6 +7,7 @@ class Canvas:
 		self.ChessBoard = []
 		self.Winner = - 1
 		self.CanKillOnWalk = False
+		self.history = []
 	def CreateChessBoard(self, random = "False"):
 		ChessBoard = [
 			['Black castle', 'Black knight', 'Black bishop', 'Black queen', 'Black king', 'Black bishop', 'Black knight', 'Black castle'],
@@ -40,12 +41,12 @@ class Canvas:
 				elif randint(0,1):
 					Field[y][x] = Element
 		return Field
-	def Move(self, startpos:list, endpos:list, PlayerColor:bool, mode:int = 1):
+	def Move(self, startposs:list, endposs:list, PlayerColor:bool, mode:int = 1):
 		if startpos == endpos:
 			return str({"Move":0, "description":"StartPosition = EndPosition"})
 		try:
-			startpos = Str2pos(startpos)
-			endpos = Str2pos(endpos)
+			startpos = Str2pos(startposs)
+			endpos = Str2pos(endposs)
 			print("Debug poss", startpos, endpos)
 		except KeyError:
 			print("Некоректные данные")
@@ -99,12 +100,17 @@ class Canvas:
 		if  self.ChessBoard[int(startpos[0])][int(startpos[1])] != "null":
 			self.ChessBoard[int(startpos[0])][int(startpos[1])] =  "null"
 		
+		self.history.append([startposs, endposs])
+		
 		if EPosPiece[6:] == "king":
 			self.Win(Color)
 		
 		self.FogBoards = (self.WarFogGen("White"), self.WarFogGen("Black"))
 		
 		return str({"Move":1})
+	@property
+	def GetHistory(self):
+		return self.history
 	def Replace(self, sp, ep):
 		self.ChessBoard[int(sp[0])][int(sp[1])], self.ChessBoard[int(ep[0])][int(ep[1])] = self.ChessBoard[int(ep[0])][int(ep[1])], self.ChessBoard[int(sp[0])][int(sp[1])]
 	def PrintChessBoard(self, RoomName):

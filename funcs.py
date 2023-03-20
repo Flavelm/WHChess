@@ -4,13 +4,18 @@ def IsNone(*requests) -> bool:
 		if i == None:
 			return True
 	return False
+def NotHeaders(*headers):
+	header = 0
+	for elem in headers:
+		if elem == None:
+			return {"Error":header}
+		header += 1
+	return {"Ebat":1}
 def Str2pos(pos:str) -> str:
 	if pos == "null":
-		return
-	if pos == "0d":
-		return "73"
+		raise KeyError("N/a")
 	X = {"a":"0", "b":"1", "c":"2", "d":"3", "e":"4", "f":"5", "g":"6", "h":"7"}
-	Y = {'1':"7", '2':"6", '3':"5", '4':"4", '5':"3", '6':"2", '7':"1", '8':"0"}
+	Y = {"0":"7", '1':"7", '2':"6", '3':"5", '4':"4", '5':"3", '6':"2", '7':"1", '8':"0"}
 	x = {"0":"a", "1":"b", "2":"c", "3":"d", "4":"e", "5":"f", "6":"g", "7":"h"}
 	y = {"7":"1", "6":"2", "5":"3", "4":"4", "3":"5", "2":"6", "1":"7", "0":"8"}
 	try:
@@ -19,9 +24,10 @@ def Str2pos(pos:str) -> str:
 		try:
 			return x[pos[1]] + y[pos[0]]
 		except KeyError:
+			with open("Invalid.data", "a", encoding="utf-8") as file:
+				file.write(f"Позиция - {pos}")
 			print(traceback.format_exc())
-			print(pos)
-			raise KeyError("Позиция - говно")
+			raise KeyError(f"Позиция - {pos} говно")
 	#except TypeError:
 	#	print("None? ", pos)
 def PosConvertRev(pos:str):

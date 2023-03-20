@@ -50,32 +50,26 @@ def Login():
 @app.route("/show", methods = ["GET", "POST"])
 def show4mouse():
 	RoomName = ReGet("roomname")
-	Color = ReGet("color", "qwertyuiop")
-	Color = Color.lower()
+	id = ReGet("id")
 	if IsNone(RoomName):
 		return NotHeaders(RoomName)
-	if Color == "white" or Color == "black":
-		if Color == "white": Color = "White"
-		else: Color = "Black"
-		return Rooms.show4mouse(RoomName, Color)
-	if Color == "qwertyuiop":
-		return Rooms.show4mouse(RoomName)
-	return {"Canvas":0, "description":"Color must be White or Black"}
+	return Rooms.show4mouse(RoomName, id)
 
-@app.route("/show/common")
+@app.route("/moves", methods = ["GET", "POST"])
+def Moves(self):
+	RoomName = ReGet("roomname")
+	if IsNone(RoomName):
+		return NotHeaders(RoomName)
+	return Rooms.GetHistory(RoomName)
+	
+
+@app.route("/show/common", methods = ["GET", "POST"])
 def showC():
 	RoomName = ReGet("roomname")
-	Color = ReGet("color", "xyu")
-	Color = Color.lower()
+	id = ReGet("id")
 	if IsNone(RoomName):
 		return NotHeaders(RoomName)
-	if Color == "white" or Color == "black":
-		if Color == "white": Color = "White"
-		else: Color = "Black"
-		return Rooms.showcommon(RoomName, Color)
-	if Color == "qwertyuiop":
-		return Rooms.showcommon(RoomName)
-	return {"Canvas":0, "description":"Color must be White or Black"}
+	return Rooms.showcommon(RoomName, id)
 
 @app.route("/move", methods = ["GET", "POST"])
 def Move():

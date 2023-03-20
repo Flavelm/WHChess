@@ -31,8 +31,7 @@ class RoomsClass:
 		self.RoomList["Rooms"][-1]["Canvas"].CreateChessBoard(bool(mode["random"]))
 		Thread(target=self.JoinToRoom, args = (PlayerId, RoomName)).run()
 		return {"Create":1}
-	def showcommon(self, RoomName, Color=None):
-		global Players
+	def GetHistory(self, RoomName):
 		Room = {}
 		for MyRoom in self.RoomList["Rooms"]:
 			NameRoom = MyRoom["Name"]
@@ -40,12 +39,8 @@ class RoomsClass:
 				Room = MyRoom
 				break
 		if Room == {}:
-			return {"Canvas":0, "description":"Room not detected"}
-		if Room["mode"]["fog"] != "False":
-			if Color == None:
-				return {"Canvas":0, "description":"FogWar been used, but color in request not been set"}
-			return Room["Canvas"].CommonShow(Room["Name"], Room["mode"]["fog"], Color[0] == "W")
-		return     Room["Canvas"].CommonShow(Room["Name"]                                      )
+			return {"Moves":0, "description":"Room not detected"}
+		return str({"Moves":Room["Canvas"].GetHistory})
 	def JoinToRoom(self, PlayerId:str, RoomName:str) -> str:
 		global Players
 		Room = {}
@@ -174,9 +169,10 @@ class RoomsClass:
 			Thread(target = self.RoomDelete, args = (RoomName)).run()
 		self.UpdateWinner(RoomName)
 		return result
-	def show4mouse(self, RoomName, Color = None):
+	def showcommon(self, RoomName, id):
 		global Players
 		Room = {}
+		Nickname = ""
 		for MyRoom in self.RoomList["Rooms"]:
 			NameRoom = MyRoom["Name"]
 			if NameRoom == RoomName:
@@ -185,10 +181,38 @@ class RoomsClass:
 		if Room == {}:
 			return {"Canvas":0, "description":"Room not detected"}
 		if Room["mode"]["fog"] != "False":
+			for player in Players.Players():
+				if player["id"] == id:
+					Nickname = player["nick"]
+			if Nickname == "":
+				return {"Canvas":0, "description":"Player not detected"}
+			Color = bool(Room["Players"].index(Nickname))
 			if Color == None:
-				return {"Canvas":0, "description":"FogWar been used, but color in request not been set"}
-			return Room["Canvas"].show4mouse(Room["Name"], Room["mode"]["fog"], Color[0] == "W")
-		return     Room["Canvas"].show4mouse(Room["Name"]                                      )
+				return {"Canvas":0, "description":"FogWar been used, but id in request not been set"}
+			return Room["Canvas"].CommonShow(Room["Name"], Room["mode"]["fog"], Color)
+		return     Room["Canvas"].CommonShow(Room["Name"])
+	def show4mouse(self, RoomName, id):
+		global Players
+		Room = {}
+		Nickname = ""
+		for MyRoom in self.RoomList["Rooms"]:
+			NameRoom = MyRoom["Name"]
+			if NameRoom == RoomName:
+				Room = MyRoom
+				break
+		if Room == {}:
+			return {"Canvas":0, "description":"Room not detected"}
+		if Room["mode"]["fog"] != "False":
+			for player in Players.Players():
+				if player["id"] == id:
+					Nickname = player["nick"]
+			if Nickname == "":
+				return {"Canvas":0, "description":"Player not detected"}
+			Color = bool(Room["Players"].index(Nickname))
+			if Color == None:
+				return {"Canvas":0, "description":"FogWar been used, but id in request not been set"}
+			return Room["Canvas"].show4mouse(Room["Name"], Room["mode"]["fog"], Color)
+		return     Room["Canvas"].show4mouse(Room["Name"])
 	def RoomsReturn(self) -> dict:
 		Info = self.RoomList["Rooms"]
 		NewRoomList = []
