@@ -137,3 +137,9 @@
   * buy
   * server
   * promo
+### /moves
+  * headers
+    * roomname
+  * return
+    * {"Moves": [ ["e2", "e4"], ["e7", "e5"], [".l.", ".l."] ]}
+    * {"Moves":0, "description":"Room not detected"}
