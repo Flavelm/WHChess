@@ -90,6 +90,13 @@
    * Winner
     > 1 белые; 0 чёрные; -1 игра ещё идёт
    > {"Canvas":0, "description":"Room not detected"}
+### /show/common
+  * headers
+    * roomname
+    * color
+      > Внимание! Можно не указывать если fog war выключен white или black, капс букв не учитывается
+  * return
+    > {"Canvas":[[["Black knight", "Black king", "Black bishop", "Black queen", "Black castle", "Black castle", "Black knight", "Black bishop"], ["Black pawn", "Black pawn", "Black pawn", "Black pawn", "Black pawn", "Black pawn", "Black pawn", "Black pawn"], ["null", "null", "null", "null", "null", "null", "null", "null"], ["null", "null", "null", "null", "null", "null", "null", "null"], ["null", "null", "null", "null", "null", "null", "null", "null"], ["null", "null", "null", "null", "null", "null", "null", "null"], ["White pawn", "White pawn", "White pawn", "White pawn", "White pawn", "White pawn", "White pawn", "White pawn"], ["White castle", "White knight", "White castle", "White king", "White bishop", "White knight", "White queen", "White bishop"]]], "Winner":-1}
 ### /room
  * headers
    * roomname
