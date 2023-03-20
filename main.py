@@ -1,25 +1,32 @@
-RequestError = str({"Error":"RequestError"})
+KivyV = "1.0"
+UnityV = "1.0"
+RequestError = {"Error":"RequestError"}
 #Вова, работай
 try:#Измени очерёдность ходов
-	import traceback
+	import traceback, os
 	from flask import Flask, request, redirect, url_for
 	from Room import RoomsClass
-	from random import randint
 	from Player import PlayersSave
-	from funcs import IsNone, ВсеДанныеИзСписка
+	from funcs import IsNone, ВсеДанныеИзСписка, NotHeaders
 	import json
 except:
 	print("Import Error")
 	input(traceback.format_exc())
 app = Flask("The_EnG1nE server")
 
+@app.route("/getVkivy", methods = ["GET", "POST"])
+def GetPythonVersion():
+	return KivyV
+
+@app.route("/getVunity", methods = ["GET", "POST"])
+def GetUnityVersion():
+	return UnityV
+
 def saveLdata():
 	with open("Logos.data","w") as file: json.dump(ldata,file);
 
-def ReGet(key:str, default=None):
+def ReGet(key:str, default=None) -> (str | None):
 	return request.headers.get(key, default)
-
-frass = ["Кто двинется, тот гей.","Лучше 5 см спереди,\nчем учить assembler", "UTF-8 not supported","","Вы думали я забыл?\nНо нет! Я забыл.", "500 Internal Server Error", "Вова работай!","Достаём двойные листочки","-40°C"]
 
 ldata = {"Users":{}, "lvls":{}};
 
@@ -37,10 +44,8 @@ def Login():
 	Password = ReGet("pass")
 	Platform = ReGet("platform")
 	if IsNone(Nickname, Password, Platform):
-		return RequestError
-	d = Players.login(Nickname, Password, Platform)
-	print(d)
-	return d
+		return NotHeaders(Nickname, Password, Platform)
+	return Players.login(Nickname, Password, Platform)
 
 @app.route("/show", methods = ["GET", "POST"])
 def show4mouse():
@@ -48,7 +53,7 @@ def show4mouse():
 	Color = ReGet("color", "qwertyuiop")
 	Color = Color.lower()
 	if IsNone(RoomName):
-		return RequestError
+		return NotHeaders(RoomName)
 	if Color == "white" or Color == "black":
 		if Color == "white": Color = "White"
 		else: Color = "Black"
@@ -57,77 +62,96 @@ def show4mouse():
 		return Rooms.show4mouse(RoomName)
 	return {"Canvas":0, "description":"Color must be White or Black"}
 
+@app.route("/show/common")
+def showC():
+	RoomName = ReGet("roomname")
+	Color = ReGet("color", "xyu")
+	Color = Color.lower()
+	if IsNone(RoomName):
+		return NotHeaders(RoomName)
+	if Color == "white" or Color == "black":
+		if Color == "white": Color = "White"
+		else: Color = "Black"
+		return Rooms.showcommon(RoomName, Color)
+	if Color == "qwertyuiop":
+		return Rooms.showcommon(RoomName)
+	return {"Canvas":0, "description":"Color must be White or Black"}
+
 @app.route("/move", methods = ["GET", "POST"])
 def Move():
 	id = ReGet("id")
 	RoomName = ReGet("roomname")
 	startpos = ReGet("startpos")
 	endpos = ReGet("endpos")
-	if IsNone(RoomName, startpos, endpos):
-		return RequestError
-	d = Rooms.Move(startpos, endpos, RoomName, id)
-	print(d)
-	return d
+	if IsNone(RoomName, startpos, endpos, id):
+		return NotHeaders(RoomName, startpos, endpos, id)
+	return Rooms.Move(startpos, endpos, RoomName, id)
 
 @app.route("/register", methods = ["GET", "POST"])
 def Register():
 	Nickname = ReGet("nick")
 	Password = ReGet("pass")
 	if IsNone(Nickname, Password):
-		return RequestError
+		return NotHeaders(Nickname, Password)
 	return Players.register(Nickname, Password)
 
 @app.route("/rooms", methods = ["GET", "POST"])
 def GetRooms():
-	return str(Rooms.RoomsReturn())
+	d = Rooms.RoomsReturn()
+	return d
 
 @app.route("/room", methods = ["GET", "POST"])
 def GetRoom():
-	RoomName = ReGet("roomname")
-	return str(Rooms.RoomReturn(RoomName))
+	RoomName = ReGet("roomname", "RoomName")
+	return Rooms.RoomReturn(RoomName)
 
 @app.route("/room/color", methods = ["GET", "POST"])
 def GetColorFromRoom():
 	PlayerId = ReGet("id")
 	RoomName = ReGet("roomname")
-	return str(Rooms.RoomGetColor(RoomName, PlayerId))
+	return Rooms.RoomGetColor(RoomName, PlayerId)
 
 @app.route("/create", methods = ["GET", "POST"])
 def CreateRoom():
 	IdPlayer = ReGet("id")
 	RoomName = ReGet("roomname")
-	free = ReGet("free", "False")
-	random = ReGet("random", "False")
-	WarFog = ReGet("fog", "False")
-	Reversed = ReGet("reverse", False)#color
-	MaxPlayers = int(ReGet("maxplayers", 2))
+	free = ReGet("free", "0")
+	random = ReGet("random", "0")
+	WarFog = ReGet("fog", "0")
+	Reversed = ReGet("reverse", "0")#color
+	MaxPlayers = ReGet("maxplayers", "2")
+	#MaxPlayers = int(ReGet("maxplayers", 2))
 	if IsNone(RoomName, IdPlayer):
-		return RequestError
-	Reversed = bool(int(Reversed))
-	return str(Rooms.CreateRoom(IdPlayer, RoomName, {"free":free, "random":random, "fog":WarFog}, Reversed, MaxPlayers))
+		return NotHeaders(RoomName, IdPlayer)
+	mods = []
+	for mode in [free, random, WarFog, Reversed]:
+		if  mode == "t"  or mode == "true"  or mode ==  "True": mods.append(1)
+		elif mode == "f" or mode == "false" or mode == "False": mods.append(0)
+		elif len(mode) == 1: mods.append(int(mode))
+	return Rooms.CreateRoom(IdPlayer, RoomName, {"free":mods[0], "random":mods[1], "fog":mods[2]}, mods[3], int(MaxPlayers))
 
 @app.route("/join", methods = ["GET", "POST"])
 def JoinToRoom():
 	IdPlayer = ReGet("id")
 	RoomName = ReGet("roomname")
 	if IsNone(RoomName, IdPlayer):
-		return RequestError
-	return str(Rooms.JoinToRoom(IdPlayer, RoomName))
+		return NotHeaders(RoomName, IdPlayer)
+	return Rooms.JoinToRoom(IdPlayer, RoomName)
 
 @app.route("/leave", methods = ["GET", "POST"])
 def LeaveFromRoom():
 	IdPlayer = ReGet("id")
 	RoomName = ReGet("roomname")
 	if IsNone(RoomName, IdPlayer):
-		return RequestError
-	return str(Rooms.LeaveFromRoom(IdPlayer, RoomName))
+		return NotHeaders(RoomName, IdPlayer)
+	return Rooms.LeaveFromRoom(IdPlayer, RoomName)
 
 @app.route("/notifications/player", methods = ["GET", "POST"])
 def Player():
 	IdPlayer = ReGet("id")
 	if IsNone(IdPlayer):
 		return RequestError
-	return str(Players.GetNotification(IdPlayer))
+	return Players.GetNotification(IdPlayer)
 
 @app.route("/notifications/send_all", methods = ["GET", "POST"])
 def SellNotificationForAll():
@@ -137,21 +161,36 @@ def SellNotificationForAll():
 		return RequestError
 	if Pass != "********":
 		return "PassError"
-	NickList = ВсеДанныеИзСписка("nick", Players.Players)
+	NickList = ВсеДанныеИзСписка("nick", Players.Players())
 	for i in NickList:
 		Players.AddNotifications(i, {"type":"server", "description":Message})
 	return "1"
 
+@app.route("/notifications/del_all", methods = ["GET", "POST"])
+def DelNotif():
+	PlayerId = ReGet("id")
+	if IsNone(PlayerId):
+		return RequestError
+	return Players.DelAllNotification(PlayerId)
+
+@app.route("/status", methods = ["GET","POST"])
+@app.route("/profile", methods = ["GET","POST"])
+def GetProfile(*_):
+	Id = ReGet("id")
+	if IsNone(Id):
+		return RequestError
+	return Players.GetProfile(Id)
+
 @app.route("/send", methods=["POST"])
 def Cummentariy():
-    if request.form.get("spam", "f") != "f":
-        return ToMainPage()
-    Nick = request.form.get("Nickname", "")
-    Cum  = request.form.get("comment", "")
-    if Nick == "" or Cum == "":
-        return ToMainPage()
-    print(f"{Nick}:", Cum)
-    return ToMainPage()
+	if request.form.get("spam", "f") != "f":
+		return ToMainPage()
+	Nick = request.form.get("Nickname", "")
+	Cum  = request.form.get("comment", "")
+	if Nick == "" or Cum == "":
+		return ToMainPage()
+	print(f"{Nick}:", Cum)
+	return ToMainPage()
 
 @app.route("/printe", methods=["POST", "GET"])
 def ppr(*_):
@@ -160,7 +199,7 @@ def ppr(*_):
 
 @app.route("/")
 def ToMainPage(*_):
-    return redirect(url_for("MainPage"))
+	return redirect("http://94.228.123.6:8000");
 
 @app.route("/llogin", methods = ["POST","GET"])
 def llogin():
@@ -204,17 +243,17 @@ def leq(lvl):
 def AddLvl(*_):
 	lvlName = ReGet("name")
 	if lvlName in ldata["lvls"]:
-		return "Уровень с таким названием уже существует";
+		return "Уровень с таким названием уже существует"
 	lvl = ReGet("lvl")
 	try:
 		lvl = json.loads(lvl)
-	except:return "Данные не являются уровнем";
+	except:return "Данные не являются уровнем"
 	UserName = ReGet("nick");
 	if leq(lvl): return "Уровень уже существует"
 	ldata["lvls"][lvlName] = {"lvl":lvl, "owner":UserName};
 	saveLdata();
 	IsNone(UserName, lvlName, lvl)
-	return "Успешно";
+	return "Успешно"
 
 @app.route("/dellvl", methods=["POST","GET"])
 def DelLvl(*_):
@@ -232,87 +271,24 @@ def Card(*_):
 	try:
 		with open("mcard","r") as f:
 			return f.read()
-	except: return "error";
+	except: return "error"
 
 @app.route("/logoslvls", methods = ["POST","GET"])
 def Loloslvls(*_):
-	return ldata["lvls"];
+	return ldata["lvls"]
 
-@app.route("/MainPage")
-def MainPage():
-    return '''<!DOCTYPE html>
+@app.errorhandler(500)
+def Error(*_):
+	return {"Error":str(traceback.format_exc()).replace("\n"," ")}
 
-<head><title>Основной сайт сервера</title></head>
-<body>
-    <style>
-        *{
-            padding: 0;
-            margin: 0;
-        }
-        .border {
-            padding: 2%;
-            text-align: center;
-        }
-        .anim {
-            -webkit-animation: scale-up-hor-center 0.4s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
-                    animation: scale-up-hor-center 0.4s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
-        }
-        .gradient{background: linear-gradient(to bottom right, rgb(189, 129, 0), rgb(170, 0, 0)); background-size: cover; min-height:100vh;}
-		h2{color: white}
-        h1{color: whitesmoke;}
-        a{color: rgb(218, 218, 255);}
-        li{color: red;}
-        .y{-webkit-animation:roll-in-top 5s ease-in-out infinite alternate both;animation:roll-in-top 5s ease-in-out infinite alternate both}
-        @-webkit-keyframes roll-in-top{0%{-webkit-transform:translateY(-800px) rotate(-540deg);transform:translateY(-800px) rotate(-540deg);opacity:0}100%{-webkit-transform:translateY(0) rotate(0deg);transform:translateY(0) rotate(0deg);opacity:1}}@keyframes roll-in-top{0%{-webkit-transform:translateY(-800px) rotate(-540deg);transform:translateY(-800px) rotate(-540deg);opacity:0}100%{-webkit-transform:translateY(0) rotate(0deg);transform:translateY(0) rotate(0deg);opacity:1}}
-        @-webkit-keyframes scale-up-hor-center {
-            0% {
-                -webkit-transform: scaleX(0.4);
-                        transform: scaleX(0.4);
-            }
-            100% {
-                -webkit-transform: scaleX(1);
-                        transform: scaleX(1);
-            }
-            }
-            @keyframes scale-up-hor-center {
-            0% {
-                -webkit-transform: scaleX(0.4);
-                        transform: scaleX(0.4);
-            }
-            100% {
-                -webkit-transform: scaleX(1);
-                        transform: scaleX(1);
-            }
-            }
-    </style>
-    <div class="gradient">
-        <div class="y"><h2>Жизненные фразы:\n"'''+ frass[randint(0,len(frass)-1)] +'''"</h2></div>
-        <div class="border">
-            <img src='https://i.pinimg.com/564x/8e/54/b1/8e54b114023bca08d4c23b620adef809.jpg' align = "right">
-                <div class="anim">
-                <h1>Куда надо?</h1>
-                <li>
-                    <a href="/ChessPage">Шахматы</a>
-                </li>
-                <form action="/send", method="post">
-                    <input type="text" name="Nickname" placeholder="Ник">
-                    <input type="text" name="comment" placeholder="Cumментарий">
-                    <input type="checkbox" name="spam" value="t"> Спам
-                    <input type="submit" value="Отправить">
-                </form>
-				
-                </div>
-            </div>
-        <div class="border">
-            <a href="https://discord.gg/crSZCMvRbQ"><img src="https://upload.wikimedia.org/wikipedia/ru/thumb/b/b7/Discord_logo_svg.svg/2560px-Discord_logo_svg.svg.png" width="400" height="70"></a>
-            <a href="https://www.youtube.com/c/TheEnG1eNbaHHbaSh_OR1G1NAJL"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/2560px-YouTube_full-color_icon_%282017%29.svg.png" width="150" height="100"></a>
-        </div>
-            
-        
-    </div>
-</body>'''
+@app.after_request
+def add_header(response):
+	response.headers["access-control-allow-origin"] = '*'
+	response.headers["Access-Control-Allow-Origin"] = '*'
+	response.headers["Content-Type"] = "text/plain"
+	response.headers["Access-Control-Allow-Headers"] = "*"
+	return response
 
-Players = PlayersSave()
-print(Players.Players)
-Rooms = RoomsClass()
-app.run(host='0.0.0.0')
+Players = PlayersSave();
+Rooms = RoomsClass();
+app.run(host='0.0.0.0', port=5001);

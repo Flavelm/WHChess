@@ -1,5 +1,5 @@
 from funcs import PosConvert, PosConvertRev, Str2pos
-from random import shuffle
+from random import shuffle, randint
 from copy import copy
 from traceback import format_exc
 class Canvas:
@@ -23,9 +23,9 @@ class Canvas:
 			shuffle(ChessBoard[0])
 			shuffle(ChessBoard[-1])
 		self.ChessBoard = ChessBoard
+		self.FogBoards = (self.WarFogGen("White"), self.WarFogGen("Black"))
 	def WarFogGen(self, color:str) -> list:
 		Field = []
-		deltalist = [[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,-1],[1,-1],[-1,1]]
 		for y in range(8):
 			temp = []
 			for x in range(8):
@@ -34,96 +34,13 @@ class Canvas:
 		for y in range(8):
 			for x in range(8):
 				Element = self.ChessBoard[y][x]
-				PieceType = Element[6:]
 				PieceColor = Element[:5]
-				if Element != "null" and color == PieceColor:
+				if (Element != "null" and color == PieceColor):
 					Field[y][x] = Element
-					for delta in deltalist:
-						if x + delta[0] or y + delta[1] < 0: continue
-						try: Field[y + delta[1]][x + delta[0]] = self.ChessBoard[y + delta[1]][x + delta[0]]
-						except IndexError:continue
-						except: print(format_exc())
-					if PieceType == "pawn":
-						for delta in [[0,2],[0,-2]]:
-							if y + delta[1] < 0: continue
-							try:
-								Field[y + delta[1]][x + delta[0]] = self.ChessBoard[y + delta[1]][x + delta[0]]
-							except IndexError:continue
-							except: print(format_exc())
-					if PieceType == "castle" or PieceType == "queen":
-						for xp in range(1, 8):
-							try:
-								Field[y][x + xp] = self.ChessBoard[y][x + xp]
-								if self.ChessBoard[y][x + xp] != "null":
-									break
-							except IndexError:break
-							except: print(format_exc())
-						for xm in range(1, 8):
-							try:
-								Field[y][x - xm] = self.ChessBoard[y][x - xm]
-								if self.ChessBoard[y][x - xm] != "null":
-									break
-							except IndexError:break
-							except: print(format_exc())
-						for yp in range(1,8):
-							if y + yp < 0: continue
-							try:
-								Field[y+yp][x] = self.ChessBoard[y+yp][x]
-								if self.ChessBoard[y + yp][x] != "null":
-									break
-							except IndexError:break
-							except: print(format_exc())
-						for ym in range(1,8):
-							if y - ym < 0: continue
-							try:
-								Field[y-ym][x] = self.ChessBoard[y-ym][x]
-								if self.ChessBoard[y - ym][x] != "null":
-									break
-							except IndexError:break
-							except: print(format_exc())
-					if PieceType == "bishop" or PieceType == "queen":
-						for xpyp in range(1,8):
-
-							try:
-								Field[y + xpyp][x + xpyp] = self.ChessBoard[y + xpyp][x + xpyp]
-								if self.ChessBoard[y + xpyp][x + xpyp] != "null":
-									break
-							except IndexError:break
-							except: print(format_exc())
-						for xmym in range(1,8):
-							if y - xmym < 0: continue
-							try:
-								Field[y - xmym][x - xmym] = self.ChessBoard[y - xmym][x - xmym]
-								if self.ChessBoard[y - xmym][x - xmym] != "null":
-									break
-							except IndexError:break
-							except: print(format_exc())
-						for xpym in range(1,8):
-							if y - xpym < 0: continue
-							try:
-								Field[y - xpym][x + xpym] = self.ChessBoard[y - xpym][x + xpym]
-								if self.ChessBoard[y - xpym][x + xpym] != "null":
-									break
-							except IndexError:break
-							except: print(format_exc())
-						for xmyp in range(1,8):
-							try:
-								Field[y + xmyp][x - xmyp] = self.ChessBoard[y + xmyp][x - xmyp]
-								if self.ChessBoard[y + xmyp][x - xmyp] != "null":
-									break
-							except IndexError:break
-							except: print(format_exc())
-					if PieceType == "knight":
-						for delta in [ (1, 2), (-1, 2), (1, -2), (-1, -2), (-2, 1), (-2, -1), (2, 1), (2,-1) ]:
-							if y + delta[1] < 0: continue
-							try:   Field[y + delta[1]][x + delta[0]] = self.ChessBoard[y + delta[1]][x + delta[0]]
-							except IndexError:continue
-							except: print(format_exc())
-		if __name__ == "__main__":
-			return Field
-		Pole = str(Field).replace("[","").replace("]","")
-		return str("{'Canvas':[" + Pole + "], 'Winner':" + str(self.Winner) + "}")
-	def Move(self, startpos:list, endpos:list, PlayerColor:bool, mode:str = "False", RoomName:str = "TestRoom"):
+				elif randint(0,1):
+					Field[y][x] = Element
+		return Field
+	def Move(self, startpos:list, endpos:list, PlayerColor:bool, mode:int = 1):
 		if startpos == endpos:
 			return str({"Move":0, "description":"StartPosition = EndPosition"})
 		try:
@@ -133,7 +50,7 @@ class Canvas:
 		except KeyError:
 			print("Некоректные данные")
 			return str({"Move":0, "description":"PosError"})
-		check_valide = mode != "True"
+		check_valide = mode
 		SPosPiece = self.ChessBoard[int(startpos[0])][int(startpos[1])]
 		EPosPiece = self.ChessBoard[int(endpos[0])][int(endpos[1])]
 		Piece = SPosPiece[6:]
@@ -163,17 +80,20 @@ class Canvas:
 			EndPosColor = False
 		else:
 			EndPosColor = None
-		if PlayerColor:
+		if PlayerColor % 2 != 0:
 			PlayerColor = 1
 		else:
 			PlayerColor = 0
 		if bool(Color) != bool(PlayerColor) and check_valide:
-			return str({"Move":0, "description":f"You don't have this piece {Piece} {bool(PlayerColor)} {Color}"})
+			return str({"Move":0, "description":f"You dont have this piece {Piece} {bool(PlayerColor)} {Color}"})
 		if SPosPiece == "null":
 			return str({"Move":0, "description":"Piece is not found"})
 
-		if not self.Valide(startpos, endpos, Piece, Color, EPosPiece, EndPosColor) and check_valide:
-			return str({"Move":0, "description":"AntyCheat"})
+		print(check_valide, "cv")
+
+		if not self.Valide(startpos, endpos, Piece, Color, EPosPiece, EndPosColor):
+			if check_valide:
+				return str({"Move":0, "description":"AntyCheat"})
 		
 		self.Replace(startpos, endpos)
 		if  self.ChessBoard[int(startpos[0])][int(startpos[1])] != "null":
@@ -182,10 +102,13 @@ class Canvas:
 		if EPosPiece[6:] == "king":
 			self.Win(Color)
 		
+		self.FogBoards = (self.WarFogGen("White"), self.WarFogGen("Black"))
+		
 		return str({"Move":1})
 	def Replace(self, sp, ep):
 		self.ChessBoard[int(sp[0])][int(sp[1])], self.ChessBoard[int(ep[0])][int(ep[1])] = self.ChessBoard[int(ep[0])][int(ep[1])], self.ChessBoard[int(sp[0])][int(sp[1])]
 	def PrintChessBoard(self, RoomName):
+		return None
 		if self.ChessBoard == []:
 			self.CreateChessBoard()
 		Pole = str(self.WarFogGen("White"))
@@ -268,11 +191,17 @@ class Canvas:
 		print(Pole)
 	def getWinner(self):
 		return self.Winner
-	def show4mouse(self, RoomName):
+	def show4mouse(self, RoomName, fog = False, color = True):
 		self.PrintChessBoard(RoomName)
-		Pole = str(self.ChessBoard).replace("[","").replace("]","")
-		return str("{'Canvas':[" + Pole + "], 'Winner':" + str(self.Winner) + "}")
+		if fog: Pole = str(self.FogBoards[{True:0, False:1}[color]]).replace("[","").replace("]","")
+		else:   Pole = str(self.ChessBoard                         ).replace("[","").replace("]","")
+		return     str("{'Canvas':[" +                   Pole                   + "], 'Winner':" + str(self.Winner) + "}").replace("'", "\"")
+	def CommonShow(self, RoomName, fog = False, color = True):
+		if fog: Pole = str(self.FogBoards[{True:0, False:1}[color]])
+		else:   Pole = str(self.ChessBoard                         )
+		return     str("{'Canvas':[" +                   Pole                   + "], 'Winner':" + str(self.Winner) + "}").replace("'", "\"")
 	def Win(self, winner:bool):
+		[True,False][int(winner)]
 		self.Winner = int(winner)
 	def draw(self):
 		self.Winner = 2
@@ -289,8 +218,7 @@ class Canvas:
 	"""
 	def GetPieceFromField(self, pos:str) -> str:
 		"human pos"
-		try: pos = Str2pos(pos)
-		except: pos = Str2pos(pos[1]+pos[0])
+		pos = Str2pos(pos)
 		cell = self.ChessBoard[int(pos[0])][int(pos[1])]
 		return cell
 	def KillPiece(self, poshum:str):

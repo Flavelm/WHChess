@@ -3,7 +3,7 @@ from Canvas import Canvas
 from Player import PlayersSave
 from threading import Thread
 from time import sleep as НихуяНеДелать, time
-
+import json
 from funcs import ReverseBool
 Players = PlayersSave()
 class RoomsClass:
@@ -11,24 +11,41 @@ class RoomsClass:
 	def __init__(self):
 		self.RoomList = {"Rooms":[]}
 	def CreateRoom(self, PlayerId:str, RoomName:str, mode:dict, Reversed:bool, MaxPlayers:int) -> str:
+		if " " in RoomName:
+			return {"Create":0, "description":"space in room name"}
 		global Players
 		Nickname = ""
-		for player in Players.Players:
-			print(player, player["id"], PlayerId, player["nick"])
+		for player in Players.Players():
 			if player["id"] == PlayerId:
 				Nickname = player["nick"]
 		if Nickname == "":
-			return str({"Create":0, "description":"Player not detected"}) #"Player not detected"
+			return {"Create":0, "description":"Player not detected"} #"Player not detected"
 		if RoomName in self.СтрашнаяПиздотня("Name"):
-			return str({"Create":0, "description":'Room with name "' + RoomName + '" been created'})
+			return {"Create":0, "description":'Room with name "' + RoomName + '" been created'}
 		for Player1 in self.СтрашнаяПиздотня("Players"):
 			for Player in Player1:
 				if Nickname == Player:
-					return str({"Create":0, "description":"Player in room"})
-		self.RoomList["Rooms"].append({"Name":RoomName, "IsGameStarted":0, "Players":[], "MaxPlayers":int(MaxPlayers), "WaitPlayer":0, "mode":mode, "Reverse":int(Reversed), "Winner":-1, "Canvas":Canvas()})
-		self.RoomList["Rooms"][-1]["Canvas"].CreateChessBoard(mode["random"])
+					return {"Create":0, "description":"Player in room"}
+		self.RoomList["Rooms"].append({"Name":RoomName, "IsGameStarted":0, "Players":[], "MaxPlayers":int(MaxPlayers), "WaitPlayer":0, "mode":mode, "Reverse":Reversed, "Winner":-1, "Canvas":Canvas()})
+		print("mods -", mode)
+		self.RoomList["Rooms"][-1]["Canvas"].CreateChessBoard(bool(mode["random"]))
 		Thread(target=self.JoinToRoom, args = (PlayerId, RoomName)).run()
 		return {"Create":1}
+	def showcommon(self, RoomName, Color=None):
+		global Players
+		Room = {}
+		for MyRoom in self.RoomList["Rooms"]:
+			NameRoom = MyRoom["Name"]
+			if NameRoom == RoomName:
+				Room = MyRoom
+				break
+		if Room == {}:
+			return {"Canvas":0, "description":"Room not detected"}
+		if Room["mode"]["fog"] != "False":
+			if Color == None:
+				return {"Canvas":0, "description":"FogWar been used, but color in request not been set"}
+			return Room["Canvas"].CommonShow(Room["Name"], Room["mode"]["fog"], Color[0] == "W")
+		return     Room["Canvas"].CommonShow(Room["Name"]                                      )
 	def JoinToRoom(self, PlayerId:str, RoomName:str) -> str:
 		global Players
 		Room = {}
@@ -39,27 +56,27 @@ class RoomsClass:
 				Room = MyRoom
 				break
 		if Room == {}:
-			return str({"Join":0, "description":"Room not detected"})
+			return {"Join":0, "description":"Room not detected"}
 		if len(Room["Players"]) == int(Room["MaxPlayers"]):
-			return str({"Join":0, "description":"Room is full"})
-		for player in Players.Players:
+			return {"Join":0, "description":"Room is full"}
+		for player in Players.Players():
 			if player["id"] == PlayerId:
 				Nickname = player["nick"]
 		if Nickname == "":
-			return str({"Join":0, "description":"Player not detected"})
+			return {"Join":0, "description":"Player not detected"}
 		for Player1 in self.СтрашнаяПиздотня("Players"):
 			for Player in Player1:
 				if Nickname == Player:
-					return str({"Join":0, "description":"Player in room"})
+					return {"Join":0, "description":"Player in room"}
 		Room["Players"].append(Nickname)
-		if len(Room["Players"]) == 2:
+		if len(Room["Players"]) == int(Room["MaxPlayers"]):
 			Room["IsGameStarted"] = 1
-			if bool(Room["Reverse"]):
+			if not bool(Room["Reverse"]):
+				print("Создатель играет за белых")
+			else:
 				Room["Players"].reverse()
 				print("Создатель играет за чёрных")
-			else:
-				print("Создатель играет за белых")
-		return str({"Join":"1"})
+		return {"Join":"1"}
 	def UpdateWinner(self, RoomName):
 		Room = {}
 		for MyRoom in self.RoomList["Rooms"]:
@@ -68,7 +85,7 @@ class RoomsClass:
 				Room = MyRoom
 				break
 		if Room == {}:
-			return str({"Leave":0, "description":"Room not detected"})
+			return {"Leave":0, "description":"Room not detected"}
 		Room["Winner"] = Room["Canvas"].getWinner()
 		try:
 			if Room["Winner"] != -1:
@@ -78,10 +95,8 @@ class RoomsClass:
 				else:
 					Players.AddNotifications(Room["Players"][int(Room["Winner"])], {"type":"win","description":f'Победа в комнате {RoomName}, партия между {Room["Players"][0]} и {Room["Players"][1]}'})
 					Players.AddNotifications(Room["Players"][int(ReverseBool(int(Room["Winner"])))], {"type":"lose","description":f'Проигрыш в комнате {RoomName}, партия между {Room["Players"][0]} и {Room["Players"][1]}'})
-		except: print("Похуй")
+		except: print("Похуй", traceback.format_exc())
 	def LeaveFromRoom(self, PlayerId:str, RoomName:str):
-		t = time()
-		Gen = 0
 		global Players
 		Nickname = ""
 		Room = {}
@@ -91,41 +106,35 @@ class RoomsClass:
 				Room = MyRoom
 				break
 		if Room == {}:
-			return str({"Leave":0, "description":"Room not detected"})
-		for player in Players.Players:
+			return {"Leave":0, "description":"Room not detected"}
+		for player in Players.Players():
 			if player["id"] == PlayerId:
 				Nickname = player["nick"]
 		if Nickname == "":
-			return str({"Leave":0, "description":"Player not detected"})
-		if len(Room["Players"]) == 0:
-			Thread(target = self.RoomDelete, args = (RoomName)).run()
+			return {"Leave":0, "description":"Player not detected"}
 		if Room["IsGameStarted"]:
-			PlayerColor = self.RoomGetColor(RoomName, PlayerId)
-			Room["Canvas"].Lose(int(PlayerColor[10] == "W"))
-			Thread(target = self.RoomDelete, args = (RoomName)).run()
-		self.UpdateWinner(RoomName)
+			Room["Canvas"].Lose(int(json.loads(str(self.RoomGetColor(RoomName, PlayerId)).replace("'", "\""))["Color"] == "White"))
+			self.UpdateWinner(RoomName)
 		try:
-			Thread(target=self.jxfoep, args=(Room, Nickname)).run()
+			self.jxfoep(Room, Nickname)
 		except ValueError:
-			return str({"Leave":0, "description":"Player not in room"})
-		return str({"Leave":"1"})
+			return {"Leave":0, "description":"Player not in room"}
+		if Room["IsGameStarted"]:
+			self.RoomDelete(RoomName)
+		if len(Room["Players"]) == 0:
+			self.RoomDelete(RoomName)
+		return {"Leave":1}
 	def RoomDelete(self, RoomName:str, *_):
-		Thread(target=self.rd, args=(RoomName)).run()
-	def rd(self, RoomName:str, *_):
-		НихуяНеДелать(4)
+		print(RoomName)
 		Room = {}
 		for MyRoom in self.RoomList["Rooms"]:
-			NameRoom = MyRoom["Name"]
-			if NameRoom == RoomName:
+			if MyRoom["Name"] == RoomName:
 				Room = MyRoom
 				break
 		if Room == {}:
-			return str({"Leave":0, "description":"Room not detected"})
+			return {"Leave":0, "description":"Room not detected"}
 		self.RoomList["Rooms"].pop(self.RoomList["Rooms"].index(Room))
-	def jxfoep(self, R, N, *_):
-		Thread(target=self.odpzmg, args=(R, N)).run()
-	def odpzmg(self, Room, Nickname):
-		НихуяНеДелать(2)
+	def jxfoep(self, Room, Nickname, *_):
 		Room["Players"].pop(Room["Players"].index(Nickname))
 	def Move(self, startpos:str, endpos:str, RoomName:str, PlayerId:str) -> str:
 		global Players
@@ -137,31 +146,30 @@ class RoomsClass:
 				Room = MyRoom
 				break
 		if Room == {}:
-			return str({"Move":0, "description":"Room not detected"})
+			return {"Move":0, "description":"Room not detected"}
 		if not Room["IsGameStarted"]:
-			return str({"Move":0, "description":"Game not started"})
-		for player in Players.Players:
+			return {"Move":0, "description":"Game not started"}
+		for player in Players.Players():
 			if player["id"] == PlayerId:
 				Nickname = player["nick"]
 		if Nickname == "":
-			return str({"Move":0, "description":"Player not detected"})
+			return {"Move":0, "description":"Player not detected"}
 		if len(startpos) != 2 or len(endpos) != 2:
-			return str({"Move":0, "description":"Incorecteble position"})
-		if Room["Players"][int(Room["WaitPlayer"])] != Nickname and Room["mode"]["free"] == False:
-			return str({"Move":0, "description": f'{Room["Players"][Room["WaitPlayer"]]} ≠ {Nickname}'})
-		try:
-			PlayerColor = Room["Players"].index(Nickname)
-		except:
-			return str({"Move":0, "description":"The player is out of the room"})
+			return {"Move":0, "description":"Incorecteble position"}
+		if not Room["mode"]["free"]:
+			if Room["Players"][int(Room["WaitPlayer"])] != Nickname:
+				return {"Move":0, "description": f'{Room["Players"][Room["WaitPlayer"]]} ≠ {Nickname}'}
+		try: PlayerColor = int(Room["Players"].index(Nickname) % 2 == 0)
+		except: return {"Move":0, "description":"The player is out of the room"}
 		if not Room["IsGameStarted"]:
-			return str({"Canvas":0, "description":"Game not started"})
+			return {"Canvas":0, "description":"Game not started"}
 		Mode = Room["mode"]
-		result = Room["Canvas"].Move(startpos, endpos, PlayerColor, Mode, RoomName)
+		result = Room["Canvas"].Move(startpos, endpos, PlayerColor, Mode)
 		if result == str({"Move":1}):
-			if Room["WaitPlayer"]:
+			if Room["MaxPlayers"] == 1 or Room["WaitPlayer"] + 1 > Room["MaxPlayers"]:
 				Room["WaitPlayer"] = 0
 			else:
-				Room["WaitPlayer"] = 1
+				Room["WaitPlayer"] += 1
 		elif result == str({"Move":2}):
 			Thread(target = self.RoomDelete, args = (RoomName)).run()
 		self.UpdateWinner(RoomName)
@@ -175,13 +183,13 @@ class RoomsClass:
 				Room = MyRoom
 				break
 		if Room == {}:
-			return str({"Canvas":0, "description":"Room not detected"})
+			return {"Canvas":0, "description":"Room not detected"}
 		if Room["mode"]["fog"] != "False":
 			if Color == None:
-				return str({"Canvas":0, "description":"FogWar been used, but color in request not been set"})
-			return Room["Canvas"].WarFogGen(Color)
-		return Room["Canvas"].show4mouse(Room["Name"])
-	def RoomsReturn(self):
+				return {"Canvas":0, "description":"FogWar been used, but color in request not been set"}
+			return Room["Canvas"].show4mouse(Room["Name"], Room["mode"]["fog"], Color[0] == "W")
+		return     Room["Canvas"].show4mouse(Room["Name"]                                      )
+	def RoomsReturn(self) -> dict:
 		Info = self.RoomList["Rooms"]
 		NewRoomList = []
 		for Room in Info:
@@ -189,8 +197,9 @@ class RoomsClass:
 			for key in Room:
 				if key != "Canvas":
 					NewRoom[key] = Room[key]
+			Room["Reverse"] = int(Room["Reverse"])
 			NewRoomList.append(NewRoom)
-		return str({"Rooms":NewRoomList})
+		return {"Rooms":NewRoomList}
 	def RoomGetColor(self, RoomName, PlayerId) -> str:
 		global Players
 		Room = {}
@@ -201,19 +210,19 @@ class RoomsClass:
 				Room = MyRoom
 				break
 		if Room == {}:
-			return str({"Color":0, "description":"Room not detected"})
-		for player in Players.Players:
+			return {"Color":0, "description":"Room not detected"}
+		for player in Players.Players():
 			if player["id"] == PlayerId:
 				Nickname = player["nick"]
 		if Nickname == "":
-			return str({"Color":0, "description":"Player not detected"})
+			return {"Color":0, "description":"Player not detected"}
 		if len(Room["Players"]) != Room["MaxPlayers"]:
-			return str({"Color":0, "description":"Room not full"})
+			return {"Color":0, "description":"Room not full"}
 		if Room["Players"][0] == Nickname or Room["Players"][1] == Nickname:
 			if Room["Players"].index(Nickname):
-				return str({"Color":"Black"})
-			return str({"Color":"White"})
-		return str({"Color":0, "description":"Player not in room"})
+				return {"Color":"Black"}
+			return {"Color":"White"}
+		return {"Color":0, "description":"Player not in room"}
 	
 	def СтрашнаяПиздотня(Экземпляр, Ключ:str) -> list:
 		"""Это пиздец должен возващать в виде списка каждое значение ключей из комнат"""
@@ -233,14 +242,15 @@ class RoomsClass:
 					break
 		except:
 			print(traceback.format_exc())
-			return str({"Room":0, "description":"Room not detected"})
+			return {"Room":0, "description":"Room not detected"}
 		if Room == {}:
-			return str({"Room":0, "description":"Room not detected"})
+			return {"Room":0, "description":"Room not detected"}
 		NewRoom = {}
 		for key in Room:
 			if key != "Canvas":
 				NewRoom[key] = Room[key]
-		return str(NewRoom)
+		NewRoom["Reverse"] = int(bool(NewRoom["Reverse"]))
+		return NewRoom
 	def PrintCanvas(self, RoomName:str) -> str:
 		global Players
 		Room = {}
@@ -250,7 +260,7 @@ class RoomsClass:
 				Room = MyRoom
 				break
 		if Room == {}:
-			return str({"Canvas":0, "description":"Room not detected"})
+			return {"Canvas":0, "description":"Room not detected"}
 		return Room["Canvas"].PrintChessBoard(Room["Name"])
 	def __str__(self):
 		return self.RoomList
