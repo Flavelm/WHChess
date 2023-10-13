@@ -6,7 +6,8 @@ from os import system
 import traceback
 from requests import get
 idplayer = input("id ")
-site = input("url not :5000 ")
+port = input("port")
+site = input(f"url not :{port} ")
 if site == "":
     site = "127.0.0.1"
 elif site == "pi":
@@ -20,10 +21,10 @@ while 1:
             system("cls")
             continue
         elif address == "reg":
-            print(get(f"http://{site}:5000/register", headers = {"nick":input("nick"), "pass":"Me0w", "id":idplayer, "platform":"PythonConsole"}).text)
+            print(get(f"http://{site}:{port}/register", headers = {"nick":input("nick"), "pass":"Me0w", "id":idplayer, "platform":"PythonConsole"}).text)
             continue
         elif address == "show":
-            ChessBoard = get(f"http://{site}:5000/show", headers = {"nick":"Nya", "fog":"True", "color":input("Цвет "), "random":"True", "pass":"Me0w", "id":idplayer, "roomname":"Fun", "platform":"PythonConsole", "startpos":pos[0], "endpos":pos[1]}).text
+            ChessBoard = get(f"http://{site}:{port}/show", headers = {"nick":"Nya", "fog":"True", "color":input("Цвет "), "random":"True", "pass":"Me0w", "id":idplayer, "roomname":"Fun", "platform":"PythonConsole", "startpos":pos[0], "endpos":pos[1]}).text
             print(ChessBoard)
             Pole = str(ChessBoard)
             Pole = Pole.replace("'",'"')
@@ -55,6 +56,6 @@ while 1:
             continue
         else:
             pos = ["e2", "e4"]
-        print("\n", get(f"http://{site}:5000/{address}", headers = {"nick":"Nya", "free":"0", "fog":"1", "random":"1", "maxplayers":"2", "pass":"Me0w", "id":idplayer, "roomname":"Fun", "platform":"PythonConsole", "startpos":pos[0], "endpos":pos[1]}).text)
+        print("\n", get(f"http://{site}:{port}/{address}", headers = {"message":"Привет", "nick":"Nya", "free":"0", "fog":"1", "random":"1", "maxplayers":"2", "pass":"Me0w", "id":idplayer, "roomname":"Fun", "platform":"PythonConsole", "startpos":pos[0], "endpos":pos[1]}).text)
     except:
         print(traceback.format_exc())

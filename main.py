@@ -12,7 +12,7 @@ try:#Измени очерёдность ходов
 except:
 	print("Import Error")
 	input(traceback.format_exc())
-app = Flask("The_EnG1nE server")
+app = Flask("The_EnG1nE server", static_folder="", template_folder="")
 
 @app.route("/getVkivy", methods = ["GET", "POST"])
 def GetPythonVersion():
@@ -211,7 +211,7 @@ def ppr(*_):
 
 @app.route("/")
 def ToMainPage(*_):
-	return redirect("http://94.228.123.6:8000");
+	return "{\"None\": null}"
 
 @app.route("/llogin", methods = ["POST","GET"])
 def llogin():
