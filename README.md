@@ -100,6 +100,19 @@
      > id игрока
  * return
   >  {'notifications': [{'type': 'server', 'description': 'Xyu'}]}
+### /chat/get
+  * headers
+    * roomname
+  * return
+    > {"ChatHistory":["...", "...", "..."]}
+### /chat/send
+  * headers
+    * roomname
+    * id
+    * message
+      > str
+  * return
+    > {"SendMessage":1}
 ### types notification
   * win
   * lose
