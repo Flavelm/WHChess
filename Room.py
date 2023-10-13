@@ -7,7 +7,7 @@ import json
 from funcs import ReverseBool
 Players = PlayersSave()
 class RoomsClass:
-	#[{"Name":str, "Players":[str, str], "MaxPlayers":str(int), "mode":{"free":False, "random":False, "fog":False}, "IsGameStarted":0,"WaitPlayer":0, "Canvas":...}]
+	#[{"Name":str, "Players":[str, str], "Chat":[], "MaxPlayers":str(int), "mode":{"free":False, "random":False, "fog":False}, "IsGameStarted":0,"WaitPlayer":0, "Canvas":...}]
 	def __init__(self):
 		self.RoomList = {"Rooms":[]}
 	def CreateRoom(self, PlayerId:str, RoomName:str, mode:dict, Reversed:bool, MaxPlayers:int) -> str:
@@ -26,7 +26,7 @@ class RoomsClass:
 			for Player in Player1:
 				if Nickname == Player:
 					return {"Create":0, "description":"Player in room"}
-		self.RoomList["Rooms"].append({"Name":RoomName, "IsGameStarted":0, "Players":[], "MaxPlayers":int(MaxPlayers), "WaitPlayer":0, "mode":mode, "Reverse":Reversed, "Winner":-1, "Canvas":Canvas()})
+		self.RoomList["Rooms"].append({"Name":RoomName, "IsGameStarted":0, "Players":[], "Chat":[], "MaxPlayers":int(MaxPlayers), "WaitPlayer":0, "mode":mode, "Reverse":Reversed, "Winner":-1, "Canvas":Canvas()})
 		print("mods -", mode)
 		self.RoomList["Rooms"][-1]["Canvas"].CreateChessBoard(bool(mode["random"]))
 		Thread(target=self.JoinToRoom, args = (PlayerId, RoomName)).run()
@@ -41,6 +41,34 @@ class RoomsClass:
 		if Room == {}:
 			return {"Moves":0, "description":"Room not detected"}
 		return str({"Moves":Room["Canvas"].GetHistory})
+	def GetChat(self, RoomName:str):
+		Room = {}
+		for MyRoom in self.RoomList["Rooms"]:
+			NameRoom = MyRoom["Name"]
+			if NameRoom == RoomName:
+				Room = MyRoom
+				break
+		if Room == {}:
+			return {"ChatHistory":0, "description":"Room not detected"}
+		return {"ChatHistory":Room["Chat"]}
+	def SendMessage(self, Message:str, PlayerId:str, RoomName:str):
+		global Players
+		Nickname = ""
+		Room = {}
+		for MyRoom in self.RoomList["Rooms"]:
+			NameRoom = MyRoom["Name"]
+			if NameRoom == RoomName:
+				Room = MyRoom
+				break
+		if Room == {}:
+			return {"SendMessage":0, "description":"Room not detected"}
+		for player in Players.Players():
+			if player["id"] == PlayerId:
+				Nickname = player["nick"]
+		if Nickname == "":
+			return {"SendMessage":0, "description":"Player not detected"}
+		Room["Chat"].append(f"{Nickname}: {Message}")
+		return {"SendMessage":1}
 	def JoinToRoom(self, PlayerId:str, RoomName:str) -> str:
 		global Players
 		Room = {}
@@ -157,7 +185,7 @@ class RoomsClass:
 		try: PlayerColor = int(Room["Players"].index(Nickname) % 2 == 0)
 		except: return {"Move":0, "description":"The player is out of the room"}
 		if not Room["IsGameStarted"]:
-			return {"Canvas":0, "description":"Game not started"}
+			return {"Move":0, "description":"Game not started"}
 		Mode = Room["mode"]
 		result = Room["Canvas"].Move(startpos, endpos, PlayerColor, Mode)
 		if result == str({"Move":1}):

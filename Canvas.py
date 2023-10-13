@@ -42,7 +42,7 @@ class Canvas:
 					Field[y][x] = Element
 		return Field
 	def Move(self, startposs:list, endposs:list, PlayerColor:bool, mode:int = 1):
-		if startpos == endpos:
+		if startposs == endposs:
 			return str({"Move":0, "description":"StartPosition = EndPosition"})
 		try:
 			startpos = Str2pos(startposs)

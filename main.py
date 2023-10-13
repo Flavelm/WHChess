@@ -78,8 +78,10 @@ def Move():
 	startpos = ReGet("startpos")
 	endpos = ReGet("endpos")
 	if IsNone(RoomName, startpos, endpos, id):
-		return NotHeaders(RoomName, startpos, endpos, id)
-	return Rooms.Move(startpos, endpos, RoomName, id)
+		return NotHeaders(RoomName, startpos, endpos, id).replace("'", "\"")
+	startpos = startpos.lower()
+	endpos = endpos.lower()
+	return Rooms.Move(startpos, endpos, RoomName, id).replace("'","\"")
 
 @app.route("/register", methods = ["GET", "POST"])
 def Register():
@@ -139,6 +141,22 @@ def LeaveFromRoom():
 	if IsNone(RoomName, IdPlayer):
 		return NotHeaders(RoomName, IdPlayer)
 	return Rooms.LeaveFromRoom(IdPlayer, RoomName)
+
+@app.route("/chat/get", methods = ["GET", "POST"])
+def GetChat():
+	RoomName = ReGet("roomname")
+	if IsNone(RoomName):
+		return(NotHeaders(RoomName))
+	return Rooms.GetChat(RoomName)
+
+@app.route("/chat/send", methods = ["GET", "POST"])
+def SendMessage():
+	RoomName = ReGet("roomname")
+	PlayerId = ReGet("id")
+	Message =  ReGet("message")
+	if IsNone(RoomName):
+		return(NotHeaders(RoomName))
+	return Rooms.SendMessage(Message, PlayerId, RoomName)
 
 @app.route("/notifications/player", methods = ["GET", "POST"])
 def Player():
@@ -285,4 +303,4 @@ def add_header(response):
 
 Players = PlayersSave();
 Rooms = RoomsClass();
-app.run(host='0.0.0.0', port=5001);
+app.run(port=5001);
