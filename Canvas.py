@@ -205,7 +205,7 @@ class Canvas:
 	def CommonShow(self, RoomName, fog = False, color = True):
 		if fog: Pole = str(self.FogBoards[{True:0, False:1}[color]])
 		else:   Pole = str(self.ChessBoard                         )
-		return     str("{'Canvas':[" +                   Pole                   + "], 'Winner':" + str(self.Winner) + "}").replace("'", "\"")
+		return     str("{'Canvas':" +                   Pole                   + ", 'Winner':" + str(self.Winner) + "}").replace("'", "\"")
 	def Win(self, winner:bool):
 		[True,False][int(winner)]
 		self.Winner = int(winner)
