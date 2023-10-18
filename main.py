@@ -81,7 +81,7 @@ def Move():
 		return NotHeaders(RoomName, startpos, endpos, id).replace("'", "\"")
 	startpos = startpos.lower()
 	endpos = endpos.lower()
-	return Rooms.Move(startpos, endpos, RoomName, id).replace("'","\"")
+	return str(Rooms.Move(startpos, endpos, RoomName, id)).replace("'","\"")
 
 @app.route("/register", methods = ["GET", "POST"])
 def Register():
