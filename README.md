@@ -81,6 +81,12 @@
    > "{'Canvas':['Black castle', 'Black knight', 'Black bishop', 'Black queen', 'Black king', 'Black bishop', 'Black knight', 'Black castle', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'null', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White castle', 'White knight', 'White bishop', 'White queen', 'White king', 'White bishop', 'White knight', 'White castle'], "Winner":-1}"
    * Winner
     > 1 белые; 0 чёрные; -1 игра ещё идёт
+### /show/common
+ * headers
+   * roomname
+   * color
+ * return
+   > {"Canvas":[[["Black king", "Black bishop", "Black bishop", "fog", "fog", "fog", "fog", "Black castle"], ["Black pawn", "fog", "fog", "fog", "Black pawn", "fog", "Black pawn", "Black pawn"], ["fog", "fog", "fog", "null", "fog", "fog", "fog", "null"], ["fog", "fog", "fog", "fog", "null", "null", "fog", "null"], ["fog", "null", "fog", "null", "White pawn", "null", "fog", "null"], ["null", "null", "null", "fog", "null", "fog", "fog", "fog"], ["White pawn", "White pawn", "White pawn", "White pawn", "fog", "White pawn", "White pawn", "White pawn"], ["White queen", "White bishop", "White castle", "White knight", "White bishop", "White king", "White knight", "White castle"]]], "Winner":-1}
 ### /room
  * headers
    * roomname
