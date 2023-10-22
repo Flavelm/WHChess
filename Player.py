@@ -54,7 +54,7 @@ class PlayersSave:
 				return {"PlayerRegistered":0, "description":"Player with your nick been created"}
 		id = 0
 		while id == 0:
-			id = randint(10000, 999999999999999999)
+			id = randint(10000, 9999999999999999)
 			for player in self.Player:
 				if player["id"] == id:
 					id = 0
