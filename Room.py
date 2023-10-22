@@ -180,16 +180,21 @@ class RoomsClass:
 		if len(startpos) != 2 or len(endpos) != 2:
 			return {"Move":0, "description":"Incorecteble position"}
 		if not Room["mode"]["free"]:
-			if Room["Players"][int(Room["WaitPlayer"])] != Nickname:
-				return {"Move":0, "description": f'{Room["Players"][Room["WaitPlayer"]]} ≠ {Nickname}'}
+			print(Room["Players"], int(Room["WaitPlayer"]), Room["MaxPlayers"])
+			try:
+				if Room["Players"][int(Room["WaitPlayer"])] != Nickname:
+					return {"Move":0, "description": f'{Room["Players"][Room["WaitPlayer"]]} ≠ {Nickname}'}
+			except:
+				if Room["Players"][int(Room["WaitPlayer"])-1] != Nickname:
+					return {"Move":0, "description": f'{Room["Players"][Room["WaitPlayer"]]} ≠ {Nickname}'}
 		try: PlayerColor = int(Room["Players"].index(Nickname) % 2 == 0)
 		except: return {"Move":0, "description":"The player is out of the room"}
 		if not Room["IsGameStarted"]:
 			return {"Move":0, "description":"Game not started"}
 		Mode = Room["mode"]
-		result = Room["Canvas"].Move(startpos, endpos, PlayerColor, Mode)
+		result = Room["Canvas"].Move(startpos, endpos, PlayerColor, Mode["free"])
 		if result == str({"Move":1}):
-			if Room["MaxPlayers"] == 1 or Room["WaitPlayer"] + 1 > Room["MaxPlayers"]:
+			if Room["WaitPlayer"] + 1 >= Room["MaxPlayers"]:
 				Room["WaitPlayer"] = 0
 			else:
 				Room["WaitPlayer"] += 1
