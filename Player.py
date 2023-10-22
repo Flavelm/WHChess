@@ -1,6 +1,5 @@
-import json, time
+import json
 from random import randint
-LastSave = time.time()
 class PlayersSave:
 	Player = []
 	#{"nick": str, "pass": str, "id": str, "platforms": [], "notifications":[], "profile":{"win":int, "lose":int, "all":int "nick":str, "level":float}}
@@ -18,11 +17,8 @@ class PlayersSave:
 			with open("PlayersSave.json", "w", encoding = "utf-8") as PlayerSaveFile:
 				json.dump(self.Player, PlayerSaveFile)
 	def write(self):
-		global LastSave
-		if LastSave + 600 < time.time():
-			with open("PlayersSave.json", "w", encoding = "utf-8") as PlayerSaveFile:
-				json.dump(self.Player, PlayerSaveFile)
-			LastSave = time.time()
+		with open("PlayersSave.json", "w", encoding = "utf-8") as PlayerSaveFile:
+			json.dump(self.Player, PlayerSaveFile)
 	def __str__(self):
 		return self.Player
 	def login(self, nickname:str, password:str, platform:str):
