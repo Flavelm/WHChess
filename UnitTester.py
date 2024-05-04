@@ -58,6 +58,6 @@ while 1:
             continue
         else:
             pos = ["e2", "e4"]
-        print("\n", get(f"http://{site}:{port}/{address}", headers = {"message":"Hi", "nick":"Test1test", "free":"1", "fog":"0", "random":"1", "maxplayers":"2", "pass":"Me0w", "id":idplayer, "roomname":"Fun", "platform":"PythonConsole", "startpos":pos[0], "endpos":pos[1]}).text)
+        print("\n", get(f"http://{site}:{port}/{address}", headers = {"message":"Hi", "nick":"Test1test", "free":"1", "fog":"0", "random":"0", "maxplayers":"2", "pass":"Me0w", "id":idplayer, "roomname":"Fun", "platform":"PythonConsole", "startpos":pos[0], "endpos":pos[1]}).text)
     except:
         print(traceback.format_exc())

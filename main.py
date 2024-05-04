@@ -121,8 +121,9 @@ def CreateRoom():
 		return NotHeaders(RoomName, IdPlayer)
 	mods = []
 	for mode in [free, random, WarFog, Reversed]:
-		if  mode == "t"  or mode == "true"  or mode ==  "True": mods.append(1)
-		elif mode == "f" or mode == "false" or mode == "False": mods.append(0)
+		mode = str(mode).lower()
+		if  mode == "t"  or mode == "true"  or mode == "1": mods.append(1)
+		elif mode == "f" or mode == "false" or mode == "0": mods.append(0)
 		elif len(mode) == 1: mods.append(int(mode))
 	return Rooms.CreateRoom(IdPlayer, RoomName, {"free":mods[0], "random":mods[1], "fog":mods[2]}, mods[3], int(MaxPlayers))
 
@@ -304,4 +305,4 @@ def add_header(response):
 
 Players = PlayersSave();
 Rooms = RoomsClass();
-app.run(port=5001);
+app.run(host="0.0.0.0", port=8080);
