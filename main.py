@@ -154,6 +154,7 @@ def SendMessage():
 	RoomName = ReGet("roomname")
 	PlayerId = ReGet("id")
 	Message =  ReGet("message")
+	if Message == "": Message = None
 	if IsNone(RoomName):
 		return(NotHeaders(RoomName))
 	return Rooms.SendMessage(Message, PlayerId, RoomName)

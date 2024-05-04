@@ -114,7 +114,6 @@ class Canvas:
 	def Replace(self, sp, ep):
 		self.ChessBoard[int(sp[0])][int(sp[1])], self.ChessBoard[int(ep[0])][int(ep[1])] = self.ChessBoard[int(ep[0])][int(ep[1])], self.ChessBoard[int(sp[0])][int(sp[1])]
 	def PrintChessBoard(self, RoomName):
-		return None
 		if self.ChessBoard == []:
 			self.CreateChessBoard()
 		Pole = str(self.WarFogGen("White"))
@@ -671,6 +670,6 @@ def test_ac(Posslist:str):
 		Board.show4mouse("AC test")
 if __name__ == "__main__":
 	print("AC = antycheat")
-	test_ac("e2 e4 / e7 e5")
+	test_ac("e2 e4 / d7 d5; e4 e5 / d5 d4")
 	#test_ac("b2 b3 / e7 e5; e2 e4 / b8 c6; f1 c4 / g8 f6; d2 d3 / f8 b4; c1 d2 / b4 d2; b1 d2 / d7 d5; c4 b5 / a7 a6; b5 a4 / b7 b5; c2 c4 / b5 c4; a4 c6 / c8 d7; c6 a8 / d8 a8")
 	#test_ac("e2 e4 / e7 e5; g1 f3 / d8 h4; f1 d3 / d7 d5; e1 g1 / c8 g4; f3 h4 / b8 a6; e4 d5 / e8 c8")
