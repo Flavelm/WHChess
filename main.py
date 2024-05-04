@@ -303,4 +303,4 @@ def add_header(response):
 
 Players = PlayersSave();
 Rooms = RoomsClass();
-app.run();
+app.run(host='0.0.0.0', port=8080)
