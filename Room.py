@@ -321,3 +321,31 @@ class RoomsClass:
 		return Room["Canvas"].PrintChessBoard(Room["Name"])
 	def __str__(self):
 		return self.RoomList
+	def GetWP(self, RoomName, PlayerId):
+		Room = {}
+		for MyRoom in self.RoomList["Rooms"]:
+			NameRoom = MyRoom["Name"]
+			if NameRoom == RoomName:
+				Room = MyRoom
+				break
+		if Room == {}:
+			return {"Moves":0, "description":"Room not detected"}
+		global Players
+		Room = {}
+		Nickname = ""
+		for MyRoom in self.RoomList["Rooms"]:
+			NameRoom = MyRoom["Name"]
+			if NameRoom == RoomName:
+				Room = MyRoom
+				break
+		if Room == {}:
+			return {"WP":"Error", "description":"Room not detected"}
+		for player in Players.Players():
+			if player["id"] == PlayerId:
+				Nickname = player["nick"]
+		if Nickname == "":
+			return {"WP":"Error", "description":"Player not detected"}
+		if len(Room["Players"]) != Room["MaxPlayers"]:
+			return {"WP":"Error", "description":"Room not full"}
+		
+		return {"WP":int(Room["WaitPlayer"])==Room["Players"].index(Nickname)}

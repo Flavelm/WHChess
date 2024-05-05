@@ -207,6 +207,14 @@ def Cummentariy():
 	print(f"{Nick}:", Cum)
 	return ToMainPage()
 
+@app.route("/room/iswaitplayer")
+def GetWP():
+	roomname = ReGet("roomname")
+	Id = ReGet("id")
+	if IsNone(roomname):
+		return RequestError
+	return Rooms.GetWP(roomname, Id)
+
 @app.route("/printe", methods=["POST", "GET"])
 def ppr(*_):
 	print(ReGet("m"))
