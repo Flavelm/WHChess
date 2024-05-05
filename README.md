@@ -92,16 +92,16 @@
      > Id игрока
    * roomname
  * return
-  * {"Color":"White"} or {"Color":"Black"} or {"Color":0}(Error)
-    > Более просто есть в room["Players"] но лучше этим пользоватся
+  > {"Color":"White"} or {"Color":"Black"} or {"Color":0}(Error)
+    * Более просто есть в room["Players"] но лучше этим пользоватся
 ### /room/iswaitplayer
  * headers
   * id
     > Id игрока
   * roomname
  * return
-  * {"WP":true}
-  * {"WP":false}
+  > {"WP":true}
+  > {"WP":false}
 ### /notifications/player
  * headers
    * id
