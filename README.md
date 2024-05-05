@@ -88,17 +88,17 @@
    >  {'Name': 'Fun', 'IsGameStarted': 0, 'Players': ['Nya'], 'MaxPlayers': 2, 'WaitPlayer': 0, 'mode': {'free': 'False', 'random': 'True', 'fog': 'True'}, 'Reverse': 0, 'Winner': -1}
 ### /room/color
  * headers
-   * id
-     > Id игрока
-   * roomname
+    * id
+      > Id игрока
+    * roomname
  * return
   > {"Color":"White"} or {"Color":"Black"} or {"Color":0}(Error)
     * Более просто есть в room["Players"] но лучше этим пользоватся
 ### /room/iswaitplayer
  * headers
-  * id
-    > Id игрока
-  * roomname
+   * id
+     > Id игрока
+   * roomname
  * return
   > {"WP":true}
   > {"WP":false}
