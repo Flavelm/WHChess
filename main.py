@@ -9,6 +9,7 @@ try:#Измени очерёдность ходов
 	from Player import PlayersSave
 	from funcs import IsNone, ВсеДанныеИзСписка, NotHeaders
 	import json
+	from copy import deepcopy
 except:
 	print("Import Error")
 	input(traceback.format_exc())
@@ -124,7 +125,7 @@ def CreateRoom():
 		mode = str(mode).lower()
 		if  mode == "t"  or mode == "true"  or mode == "1": mods.append(1)
 		elif mode == "f" or mode == "false" or mode == "0": mods.append(0)
-		elif len(mode) == 1: mods.append(int(mode))
+		elif len(mode) == 1: mods.append(int(deepcopy(mode)))
 	return Rooms.CreateRoom(IdPlayer, RoomName, {"free":mods[0], "random":mods[1], "fog":mods[2]}, mods[3], int(MaxPlayers))
 
 @app.route("/join", methods = ["GET", "POST"])

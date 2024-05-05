@@ -8,7 +8,7 @@ class Canvas:
 		self.Winner = - 1
 		self.CanKillOnWalk = False
 		self.history = []
-	def CreateChessBoard(self, random = "False"):
+	def CreateChessBoard(self, random = False):
 		ChessBoard = [
 			['Black castle', 'Black knight', 'Black bishop', 'Black queen', 'Black king', 'Black bishop', 'Black knight', 'Black castle'],
 			['Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn', 'Black pawn'],
@@ -19,7 +19,7 @@ class Canvas:
 			['White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn', 'White pawn'],
 			['White castle', 'White knight', 'White bishop', 'White queen', 'White king', 'White bishop', 'White knight', 'White castle']
 		]
-		if random != "False":
+		if random:
 			print("Перемешал")
 			shuffle(ChessBoard[0])
 			shuffle(ChessBoard[-1])

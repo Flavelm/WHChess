@@ -289,7 +289,7 @@ class RoomsClass:
 			"Процесс невозможен без пива"
 			ьуь.append(пиво[Ключ])
 		return ьуь
-	def RoomReturn(self, RoomName:str) -> str():
+	def RoomReturn(self, RoomName:str) -> str:
 		#[{"Name":str, "Players":[str, str], "MaxPlayers":str(int), "IsGameStarted":False,"WaitPlayer":0, "Canvas":...}]
 		Room = {}
 		try:

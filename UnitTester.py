@@ -8,7 +8,7 @@ from requests import get
 idplayer = input("id ")
 port = input("port")
 if port == "":
-    port = "5001"
+    port = "8080"
 site = input(f"url not :{port} ")
 if site == "":
     site = "127.0.0.1"
